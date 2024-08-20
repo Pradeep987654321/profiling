@@ -3,7 +3,8 @@ import pandas as pd
 from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
 import tempfile
-import os
+import base64
+import json
 
 # Apply custom CSS to remove padding and margins
 st.markdown(
@@ -51,26 +52,31 @@ if uploaded_file is not None:
             profile = ProfileReport(df)
 
             # Create temporary files for HTML and JSON reports
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as html_file, \
-                 tempfile.NamedTemporaryFile(delete=False, suffix=".json") as json_file:
-                
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as html_file:
                 profile.to_file(html_file.name)
-                profile.to_json(json_file.name)
-
                 html_file_path = html_file.name
+
+            # Save JSON manually
+            json_report = profile.to_json()
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as json_file:
+                json_file.write(json_report.encode('utf-8'))
                 json_file_path = json_file.name
 
             # Provide download buttons for HTML and JSON files
+            def get_base64_file(file_path):
+                with open(file_path, "rb") as f:
+                    return base64.b64encode(f.read()).decode()
+
             st.markdown(
                 f"""
-                <a href="data:file/html;base64,{base64.b64encode(open(html_file_path, "rb").read()).decode()}" download="profile_report.html">
+                <a href="data:file/html;base64,{get_base64_file(html_file_path)}" download="profile_report.html">
                 <button>Download HTML Report</button></a>
                 """,
                 unsafe_allow_html=True
             )
             st.markdown(
                 f"""
-                <a href="data:file/json;base64,{base64.b64encode(open(json_file_path, "rb").read()).decode()}" download="profile_report.json">
+                <a href="data:file/json;base64,{get_base64_file(json_file_path)}" download="profile_report.json">
                 <button>Download JSON Report</button></a>
                 """,
                 unsafe_allow_html=True
