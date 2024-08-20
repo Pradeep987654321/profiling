@@ -2,10 +2,8 @@ import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
-
-with open("style.css") as f:
-    st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
-
+import tempfile
+import os
 
 # Apply custom CSS to remove padding and margins
 st.markdown(
@@ -44,30 +42,54 @@ st.title("CSV File Uploader and EDA Report")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
 if uploaded_file is not None:
-    try:
-        # Read the CSV file
-        df = pd.read_csv(uploaded_file, encoding="latin-1")
+    with st.spinner('Generating report...'):
+        try:
+            # Read the CSV file
+            df = pd.read_csv(uploaded_file, encoding="latin-1")
+            
+            # Generate the full profiling report
+            profile = ProfileReport(df)
+
+            # Create temporary files for HTML and JSON reports
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as html_file, \
+                 tempfile.NamedTemporaryFile(delete=False, suffix=".json") as json_file:
+                
+                profile.to_file(html_file.name)
+                profile.to_json(json_file.name)
+
+                html_file_path = html_file.name
+                json_file_path = json_file.name
+
+            # Provide download buttons for HTML and JSON files
+            st.markdown(
+                f"""
+                <a href="data:file/html;base64,{base64.b64encode(open(html_file_path, "rb").read()).decode()}" download="profile_report.html">
+                <button>Download HTML Report</button></a>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <a href="data:file/json;base64,{base64.b64encode(open(json_file_path, "rb").read()).decode()}" download="profile_report.json">
+                <button>Download JSON Report</button></a>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # Load and display the HTML file
+            with open(html_file_path, "r", encoding='utf-8') as f:
+                profile_html = f.read()
+
+                # Add a wrapper div with full width and height to ensure the content fills the page
+                full_page_html = f"""
+                <div style="width: 100%; height: 100%;">
+                    {profile_html}
+                </div>
+                """
+
+                components.html(full_page_html, height=1200, scrolling=True)
         
-        # Generate the full profiling report
-        profile = ProfileReport(df)
-
-        # Save the profiling report
-        profile.to_file("test_report.html")
-        
-        # Load and display the HTML file
-        with open("test_report.html", "r", encoding='utf-8') as f:
-            profile_html = f.read()
-
-            # Add a wrapper div with full width and height to ensure the content fills the page
-            full_page_html = f"""
-            <div style="width: 100%; height: 100%;">
-                {profile_html}
-            </div>
-            """
-
-            components.html(full_page_html, height=1200, scrolling=True)
-    
-    except TypeError as te:
-        st.error(f"TypeError: {te}")
-    except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
+        except TypeError as te:
+            st.error(f"TypeError: {te}")
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {e}")
