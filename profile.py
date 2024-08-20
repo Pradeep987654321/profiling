@@ -30,13 +30,13 @@ st.markdown(
         margin: 0;
         padding: 0;
         overflow: hidden;
-        z-index: 999999;
+        z-index: 1; /* Set a lower z-index for the iframe */
     }
     .button-container {
         position: fixed;
         top: 10px;
         right: 10px;
-        z-index: 1000;
+        z-index: 1000; /* Set a higher z-index for the buttons */
     }
     .button-container a {
         text-decoration: none;
@@ -96,7 +96,7 @@ if uploaded_file is not None:
 
                 # Add a wrapper div with full width and height to ensure the content fills the page
                 full_page_html = f"""
-                <div style="width: 100%; height: 100%;">
+                <div style="width: 100%; height: 100%; position: relative;">
                     {profile_html}
                 </div>
                 """
