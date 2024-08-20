@@ -4,9 +4,8 @@ from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
 import tempfile
 import base64
-import json
 
-# Apply custom CSS to remove padding and margins
+# Apply custom CSS to remove padding and margins and position buttons
 st.markdown(
     """
     <style>
@@ -32,6 +31,16 @@ st.markdown(
         padding: 0;
         overflow: hidden;
         z-index: 999999;
+    }
+    .button-container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+    .button-container a {
+        text-decoration: none;
+        margin: 0 5px;
     }
     </style>
     """,
@@ -69,15 +78,14 @@ if uploaded_file is not None:
 
             st.markdown(
                 f"""
-                <a href="data:file/html;base64,{get_base64_file(html_file_path)}" download="profile_report.html">
-                <button>Download HTML Report</button></a>
-                """,
-                unsafe_allow_html=True
-            )
-            st.markdown(
-                f"""
-                <a href="data:file/json;base64,{get_base64_file(json_file_path)}" download="profile_report.json">
-                <button>Download JSON Report</button></a>
+                <div class="button-container">
+                    <a href="data:file/html;base64,{get_base64_file(html_file_path)}" download="profile_report.html">
+                        <button>Download HTML Report</button>
+                    </a>
+                    <a href="data:file/json;base64,{get_base64_file(json_file_path)}" download="profile_report.json">
+                        <button>Download JSON Report</button>
+                    </a>
+                </div>
                 """,
                 unsafe_allow_html=True
             )
