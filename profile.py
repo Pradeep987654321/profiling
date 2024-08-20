@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
-import streamlit.components.v1 as components
 import tempfile
 
 # Streamlit file uploader
@@ -20,11 +19,6 @@ if uploaded_file is not None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
             profile.to_file(tmp_file.name)
             tmp_file_path = tmp_file.name
-        
-        # Load and display the HTML file
-        with open(tmp_file_path, "r", encoding='utf-8') as f:
-            profile_html = f.read()
-            components.html(profile_html, height=1000, scrolling=True)
         
         # Provide a download link for the HTML file
         with open(tmp_file_path, "r", encoding='utf-8') as f:
