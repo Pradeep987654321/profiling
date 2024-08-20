@@ -4,7 +4,8 @@ from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
 import tempfile
 import base64
-
+with open("style.css") as f:
+    st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 # Apply custom CSS to remove padding and margins and position buttons at the bottom
 st.markdown(
     """
