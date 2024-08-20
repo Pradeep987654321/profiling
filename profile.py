@@ -47,13 +47,21 @@ if uploaded_file is not None:
         # Read the CSV file
         df = pd.read_csv(uploaded_file, encoding="latin-1")
 
-        # Generate the profiling report
-        profile = ProfileReport(df, title="Profiling Report", explorative=True)
+        # Generate a simplified profiling report
+        profile = ProfileReport(
+            df, 
+            title="Simplified Profiling Report",
+            minimal=True,  # Reduce the complexity of the report
+            explorative=False,  # Disable explorative analysis
+            interactions=None,  # Disable interaction analysis
+            correlations=None,  # Disable correlation analysis
+            missing_diagrams=None  # Disable missing data diagrams
+        )
 
         # Generate the HTML report as a string
         profile_html = profile.to_html()
 
-        # Display the HTML report within Streamlit using components.html
+        # Display the HTML report within Streamlit
         components.html(profile_html, height=1200, scrolling=True)
 
     except TypeError as te:
