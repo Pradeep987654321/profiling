@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
-import streamlit.components.v1 as components
+import tempfile
 
 # Apply custom CSS to remove padding and margins
 with open("style.css") as f:
@@ -47,22 +47,17 @@ if uploaded_file is not None:
         # Read the CSV file
         df = pd.read_csv(uploaded_file, encoding="latin-1")
 
-        # Generate a simplified profiling report
-        profile = ProfileReport(
-            df, 
-            title="Simplified Profiling Report",
-            minimal=True,  # Reduce the complexity of the report
-            explorative=False,  # Disable explorative analysis
-            interactions=None,  # Disable interaction analysis
-            correlations=None,  # Disable correlation analysis
-            missing_diagrams=None  # Disable missing data diagrams
-        )
+        # Generate the profiling report
+        profile = ProfileReport(df, title="Profiling Report")
 
-        # Generate the HTML report as a string
-        profile_html = profile.to_html()
-
-        # Display the HTML report within Streamlit
-        components.html(profile_html, height=1200, scrolling=True)
+        # Save the profiling report to a temporary HTML file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
+            profile.to_file(tmp_file.name)
+            tmp_file_path = tmp_file.name
+        
+        # Read and display the HTML file
+        with open(tmp_file_path, "r", encoding='utf-8') as f:
+            st.markdown(f.read(), unsafe_allow_html=True)
 
     except TypeError as te:
         st.error(f"TypeError: {te}")
