@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 import tempfile
 import base64
 
-# Apply custom CSS to remove padding and margins and position buttons
+# Apply custom CSS to remove padding and margins and position buttons at the bottom
 st.markdown(
     """
     <style>
@@ -30,13 +30,13 @@ st.markdown(
         margin: 0;
         padding: 0;
         overflow: hidden;
-        z-index: 1; /* Set a lower z-index for the iframe */
+        z-index: 1;
     }
     .button-container {
         position: fixed;
-        top: 10px;
+        bottom: 10px;
         right: 10px;
-        z-index: 1000; /* Set a higher z-index for the buttons */
+        z-index: 1000;
     }
     .button-container a {
         text-decoration: none;
