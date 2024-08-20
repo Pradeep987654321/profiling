@@ -14,14 +14,14 @@ if uploaded_file is not None:
         
         # Generate the profiling report
         profile = ProfileReport(df, minimal=True)
-
-        # Create a temporary file to save the profiling report
+        
+        # Save the profiling report to a temporary HTML file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
             profile.to_file(tmp_file.name)
             tmp_file_path = tmp_file.name
         
         # Provide a download link for the HTML file
-        with open(tmp_file_path, "r", encoding='utf-8') as f:
+        with open(tmp_file_path, "rb") as f:
             st.download_button(
                 label="Download Report",
                 data=f,
