@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
 import streamlit.components.v1 as components
+import tempfile  # Import the tempfile module
 import os
 
 # Apply custom CSS to remove padding and margins
