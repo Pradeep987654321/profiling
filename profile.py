@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
-import tempfile
 
 # Apply custom CSS to remove padding and margins
 with open("style.css") as f:
@@ -18,20 +17,6 @@ st.markdown(
     }
     .reportview-container .main {
         padding: 0;
-    }
-    iframe {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        z-index: 999999;
     }
     </style>
     """,
@@ -50,16 +35,11 @@ if uploaded_file is not None:
         # Generate the profiling report
         profile = ProfileReport(df, title="Profiling Report")
 
-        # Save the profiling report to a temporary HTML file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
-            profile.to_file(tmp_file.name)
-            tmp_file_path = tmp_file.name
-        
-        # Read and display the HTML file
-        with open(tmp_file_path, "r", encoding='utf-8') as f:
-            st.markdown(f.read(), unsafe_allow_html=True)
+        # Generate the HTML report as a string
+        profile_html = profile.to_html()
 
-    except TypeError as te:
-        st.error(f"TypeError: {te}")
+        # Display the HTML report using st.markdown()
+        st.markdown(profile_html, unsafe_allow_html=True)
+
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
