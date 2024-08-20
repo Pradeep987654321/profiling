@@ -1,27 +1,7 @@
 import streamlit as st
 import pandas as pd
 from ydata_profiling import ProfileReport
-
-# Apply custom CSS to remove padding and margins
-with open("style.css") as f:
-    st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
-
-st.markdown(
-    """
-    <style>
-    .reportview-container .main .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-        padding-left: 0rem;
-        padding-right: 0rem;
-    }
-    .reportview-container .main {
-        padding: 0;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+import streamlit.components.v1 as components
 
 # Streamlit file uploader
 st.title("CSV File Uploader and EDA Report")
@@ -31,15 +11,20 @@ if uploaded_file is not None:
     try:
         # Read the CSV file
         df = pd.read_csv(uploaded_file, encoding="latin-1")
+        
 
-        # Generate the profiling report
-        profile = ProfileReport(df, title="Profiling Report")
+        # Generate and save the profiling report
+        profile = ProfileReport(df, minimal=True)
+        profile.to_file("test_report.html")
+        st_profile_report(profile)
 
-        # Generate the HTML report as a string
-        profile_html = profile.to_html()
 
-        # Display the HTML report using st.markdown()
-        st.markdown(profile_html, unsafe_allow_html=True)
-
+    
+    except TypeError as te:
+        st.error(f"TypeError: {te}")
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
+
+
+
+
