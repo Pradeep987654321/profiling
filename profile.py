@@ -50,8 +50,11 @@ if uploaded_file is not None:
         # Generate the profiling report
         profile = ProfileReport(df, title="Profiling Report", explorative=True)
 
-        # Directly embed the report in Streamlit without writing to a file
-        st_profile_report(profile)
+        # Generate the HTML report as a string
+        profile_html = profile.to_html()
+
+        # Display the HTML report within Streamlit using components.html
+        components.html(profile_html, height=1200, scrolling=True)
 
     except TypeError as te:
         st.error(f"TypeError: {te}")
