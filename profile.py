@@ -46,15 +46,12 @@ if uploaded_file is not None:
     try:
         # Read the CSV file
         df = pd.read_csv(uploaded_file, encoding="latin-1")
-        
+
         # Generate the profiling report
         profile = ProfileReport(df, title="Profiling Report", explorative=True)
 
-        # Generate the HTML report as a string
-        profile_html = profile.to_html()
-
-        # Display the HTML report within Streamlit
-        components.html(profile_html, height=1200, scrolling=True)
+        # Directly embed the report in Streamlit without writing to a file
+        st_profile_report(profile)
 
     except TypeError as te:
         st.error(f"TypeError: {te}")
