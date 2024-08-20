@@ -1,3 +1,4 @@
 ydata-profiling
 pandas
 streamlit
+setuptools
